@@ -1,0 +1,7 @@
+if SHIELD_STROEM_LEFT || SHIELD_STROEM_RIGHT
+
+config SHIELD_NAME
+    string
+    default "stroem"
+
+endif
