@@ -25,11 +25,35 @@ jobs:
             ${{ runner.os }}-build-
 
       - name: Initialize workspace (west init)
-        uses: zmkfirmware/zmk-actions-toolkit/setup@v2
+        uses: zmkfirmware/zmk-github-actions@v2
+        with:
+          init_script: 'west init -m https://github.com --mr v0.7'
 
       - name: Export Zephyr CMake package
         run: west zephyr-export
 
       - name: Build ZMK
-        uses: zmkfirmware/zmk-actions-toolkit/build@v2
+        uses: zmkfirmware/zmk-github-actions@v2
+        with:
+          build_script: 'west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=stroem_left'
+
+      - name: Rename left firmware
+        run: cp build/zephyr/zmk.uf2 stroem_left.uf2
+
+      - name: Build ZMK (Right)
+        uses: zmkfirmware/zmk-github-actions@v2
+        with:
+          build_script: 'west build -p -s zmk/app -b nice_nano_v2 -- -DSHIELD=stroem_right'
+
+      - name: Rename right firmware
+        run: cp build/zephyr/zmk.uf2 stroem_right.uf2
+
+      - name: Archive firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            stroem_left.uf2
+            stroem_right.uf2
+
 
